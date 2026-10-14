@@ -20,26 +20,25 @@ The primary goal of this project was to analyze β-decay transitions and neutron
 
 ## Repository Contents
 
-- `tunl_pn_2dplot.C`: Primary script for histogram generation and detector synchronization.
-- `SMEAR_tunl_pn_2dplot_APBgammaDISfit_compoundLIT.C`: Compound nuclear model fitting with smearing and background modeling.
-- Fitting and analysis functions tied to theoretical state energies extracted from:
+- `tunl_pn_2dplot_all_detectorsAPB.C` — builds the combined neutron time-of-flight histogram from the per-detector ROOT files, applying the per-channel timing offsets that align the detectors (detector synchronization), and fits peaks with a polynomial background and single/double-Gaussian signal (`twodplot`, `fit`, `peakFIND`).
+- `tunl_pn_2dplot_APBgammafit.C` — the same pipeline extended with the γ-ray response model: each neutron peak is fitted as a triple Gaussian whose widths, amplitudes and spacings come from the γ-ray peak fit, with fit centres anchored to the known 136Cs state energies (`twodplotalldetectors`, `fit`, `fitgamma`).
+- Fitting functions are tied to theoretical state energies taken from:
   - TUNL 136Cs state evaluations
   - Rebeiro Ph.D. thesis (University of the Western Cape)
   - NNDC and AME2016 atomic mass evaluation data
+- The TRIM-smearing / compound-nucleus fitting script described under Key Features is not in this repository.
 
 ## How to Use
 
-1. **Install ROOT** (if not already):
-   ```bash
-   sudo apt install root-system
-   ```
-2. **Compile and run the main script**:
+1. **Install ROOT** (root.cern).
+2. **Load a macro and call its entry function** from the ROOT prompt:
    ```bash
    root -l
-   .x tunl_pn_2dplot.C
+   .L tunl_pn_2dplot_all_detectorsAPB.C
+   twodplot(0, 1, 2, ...)      // detector indices to combine
+   fit(l, h)                   // fit the channel range [l, h]
    ```
-3. **Generate `rainbow#.root` histograms** for each angle.
-4. **Fit histograms** using peak models in the `SMEAR_tunl_*.C` script.
+   or, for the γ-response model, `.L tunl_pn_2dplot_APBgammafit.C`, then `twodplotalldetectors(...)`, `fit(l, h)` and `fitgamma(l, h)`.
 
 ## Notable Parameters and Models
 
